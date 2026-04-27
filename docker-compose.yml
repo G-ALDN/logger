@@ -1,0 +1,10 @@
+services:
+  log-manager:
+    build: .
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock:ro  # Mount the socket as Read-Only
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8000:8000"
+    restart: always

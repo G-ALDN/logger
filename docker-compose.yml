@@ -1,6 +1,6 @@
 services:
   log-manager:
-    build: .
+    image: "aldn0975/logger:dev-0.1"
     volumes:
       - //var/run/docker.sock:/var/run/docker.sock:ro  # Mount the socket as Read-Only
     environment:

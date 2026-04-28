@@ -12,6 +12,7 @@ docker run \
    -d \
    -v /var/run/docker.sock:/var/run/docker.sock:ro \
    -p 8000:8000 \
+   -e PYTHONUNBUFFERED=1 \
    aldn0975/logger:latest
 ```
 

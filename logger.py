@@ -1,11 +1,11 @@
-import docker
+import docker # type: ignore
 import threading
 import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import os
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI # type: ignore
+from fastapi.responses import HTMLResponse # type: ignore
 import collections
 
 client = docker.from_env()

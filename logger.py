@@ -87,7 +87,7 @@ async def get_ui():
                 .header { background: #161b22; padding: 15px; border-bottom: 1px solid #30363d; display: flex; align-items: center; gap: 20px; }
                 #search { padding: 8px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; flex-grow: 1; max-width: 400px; }
                 .clear-btn { padding: 8px 15px; background: #da3633; border: none; color: white; cursor: pointer; border-radius: 6px; font-weight: bold; }
-                .filters { background: #161b22; padding: 15px 15px; display: flex; gap: 10px; overflow-x: auto; border-bottom: 1px solid #30363d; }
+                .filters { background: #161b22; padding: 15px 15px; display: flex; gap: 10px; overflow-x: auto; border-bottom: 1px solid #30363d; flex-shrink: 0;}
                 .filter-btn { padding: 5px 12px; background: #21262d; border: 1px solid #30363d; color: #8b949e; cursor: pointer; border-radius: 20px; white-space: nowrap; }
                 .filter-btn.active { background: #238636; color: white; border-color: #2ea043; }
                 #log-container { flex-grow: 1; overflow-y: auto; padding: 15px; line-height: 1.6; }

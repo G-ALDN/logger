@@ -23,4 +23,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/logger:latest
+          tags: 
+            ${{ secrets.DOCKER_USERNAME }}/logger:latest
+            ${{ secrets.DOCKER_USERNAME }}/logger:v${{ github.run_number }}

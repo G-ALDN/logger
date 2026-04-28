@@ -32,6 +32,8 @@ services:
 Binds to the docker sock in your docker environment. Runs a simple web app that shows all of the logs from your docker environment.
 No database currently so it can show up to 500 lines only from the time that it runs. 
 
-Current TODO:
+## Current TODO:
+~~~
 Add simple database
 Add Export to file (plaintext, csv, etc)
+~~~

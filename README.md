@@ -10,7 +10,7 @@ Docker run example:
 ``` 
 docker run \
    -d \
-   -v /var/run/docker.sock:/var/run/docker.sock \
+   -v /var/run/docker.sock:/var/run/docker.sock:ro \
    -p 8000:8000 \
    aldn0975/logger:latest
 ```
@@ -21,7 +21,7 @@ services:
   log-manager:
     image: "aldn0975/logger:latest"
     volumes:
-      - //var/run/docker.sock:/var/run/docker.sock:ro  # Mount the socket as Read-Only if you want
+      - //var/run/docker.sock:/var/run/docker.sock:ro  # Mount the socket as Read-Only
     environment:
       - PYTHONUNBUFFERED=1
     ports:

@@ -6,5 +6,8 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY logger.py .
+COPY static ./static
+RUN chmod -R 755 /app/static
+COPY index.html .
 
 CMD ["uvicorn", "logger:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -6,10 +6,13 @@ from zoneinfo import ZoneInfo
 import os
 from fastapi import FastAPI # type: ignore
 from fastapi.responses import HTMLResponse # type: ignore
+from fastapi.responses import FileResponse # type: ignore
+from fastapi.staticfiles import StaticFiles # type: ignore
 import collections
 
 client = docker.from_env()
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 log_buffer = collections.deque(maxlen=500)
 
@@ -76,112 +79,10 @@ def monitor_events():
         except docker.errors.NotFound:
             continue
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=FileResponse)
 async def get_ui():
-    return """
-    <html>
-        <head>
-            <title>Log Manager</title>
-            <style>
-                body { font-family: 'Cascadia Code', monospace; background: #0d1117; color: #c9d1d9; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-                .header { background: #161b22; padding: 15px; border-bottom: 1px solid #30363d; display: flex; align-items: center; gap: 20px; }
-                #search { padding: 8px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; flex-grow: 1; max-width: 400px; }
-                .clear-btn { padding: 8px 15px; background: #da3633; border: none; color: white; cursor: pointer; border-radius: 6px; font-weight: bold; }
-                .filters { background: #161b22; padding: 15px 15px; display: flex; gap: 10px; overflow-x: auto; border-bottom: 1px solid #30363d; flex-shrink: 0;}
-                .filter-btn { padding: 5px 12px; background: #21262d; border: 1px solid #30363d; color: #8b949e; cursor: pointer; border-radius: 20px; white-space: nowrap; }
-                .filter-btn.active { background: #238636; color: white; border-color: #2ea043; }
-                #log-container { flex-grow: 1; overflow-y: auto; padding: 15px; line-height: 1.6; }
-                .log-line { border-bottom: 1px solid #21262d; padding: 4px 0; font-size: 13px; }
-                .timestamp { color: #58a6ff; margin-right: 10px; }
-                .tag { color: #aff5b4; font-weight: bold; margin-right: 10px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <input type="text" id="search" placeholder="Filter logs..." oninput="applyFilters()">
-                <button class="clear-btn" onclick="clearLogs()">Clear Screen</button>
-            </div>
-            <div class="filters" id="filter-bar">
-                <button class="filter-btn active" onclick="setFilter('all')">all-containers</button>
-            </div>
-            <div id="log-container"></div>
+    return "index.html"
 
-            <script>
-                let currentFilter = 'all';
-                let allLogs = [];
-
-                let clearPoint = 0; 
-
-				async function clearLogs() {
-					// Set the clear point to the current number of logs
-					clearPoint = allLogs.length;
-					applyFilters();
-				}
-                
-                function setFilter(name) {
-                    currentFilter = name;
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    event.target.classList.add('active');
-                    applyFilters();
-                }
-
-				function applyFilters() {
-					const search = document.getElementById('search').value.toLowerCase();
-					const container = document.getElementById('log-container');
-					
-					// Slice the array to only show logs AFTER the clear point
-					const viewableLogs = allLogs.slice(clearPoint);
-
-					const html = viewableLogs.filter(line => {
-						return (currentFilter === 'all' || line.includes(`[${currentFilter}]`)) &&
-							line.toLowerCase().includes(search);
-					}).map(line => {
-						let formatted = line.replace(/^(\[.*?\]) (\[.*?\])/, 
-							'<span class="timestamp">$1</span><span class="tag">$2</span>');
-						return `<div class="log-line">${formatted}</div>`;
-					}).join('');
-
-					container.innerHTML = html;
-					container.scrollTop = container.scrollHeight;
-				}
-
-                async function refreshLogs() {
-					const res = await fetch('/raw-logs');
-					const newLogs = await res.json();
-					
-					// If the server buffer was cleared or rotated heavily
-					if (newLogs.length < allLogs.length) {
-						clearPoint = 0;
-					}
-					
-					allLogs = newLogs;
-					applyFilters();
-				}
-
-                async function loadFilters() {
-                    const res = await fetch('/containers');
-                    const names = await res.json();
-                    const bar = document.getElementById('filter-bar');
-                    names.forEach(name => {
-                        const btn = document.createElement('button');
-                        btn.className = 'filter-btn';
-                        btn.innerText = name;
-                        btn.onclick = (e) => {
-                            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                            e.target.classList.add('active');
-                            currentFilter = name;
-                            applyFilters();
-                        };
-                        bar.appendChild(btn);
-                    });
-                }
-
-                loadFilters();
-                setInterval(refreshLogs, 1000);
-            </script>
-        </body>
-    </html>
-    """
 @app.get("/containers")
 async def get_containers():
     # Returns a simple list of names for our filter buttons

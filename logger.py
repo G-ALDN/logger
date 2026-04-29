@@ -18,16 +18,15 @@ log_buffer = collections.deque(maxlen=500)
 
 
 def stream_container_logs(container):
-	#Prints logs for every container
-	print(f"--- Starting stream for: {container.name} ---")
-	timestamp = datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S")
-
-	log_stream = container.logs(follow=True, stream=True, tail=0)
-
-	for line in log_stream:
-		clean_line = line.decode('utf-8').strip()
-		log_buffer.append(f"[{timestamp}] [{container.name}] {clean_line}")
-		print(f"[{timestamp}] [{container.name}] {clean_line}", flush=True)
+    #Prints logs for every container
+    print(f"--- Starting stream for: {container.name} ---")
+    timestamp = datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S")
+    log_stream = container.logs(follow=True, stream=True, tail=0)
+    for line in log_stream:
+        clean_line = line.decode('utf-8').strip()
+        log_buffer.append(f"[{timestamp}] [{container.name}] {clean_line}")
+        print(f"[{timestamp}] [{container.name}] {clean_line}", flush=True)
+    log_stream.close()
 
 
 def start_logging():
